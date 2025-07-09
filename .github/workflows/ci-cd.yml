@@ -47,6 +47,15 @@ jobs:
           echo "${{ secrets.CI_PRIVATE_KEY }}" > ci_key
           chmod 600 ci_key
 
+      - name: Wait for SSH
+        run: |
+          for i in {1..15}; do
+            nc -zv ${{ env.PUBLIC_IP }} 22 && echo "SSH is up!" && exit 0
+            echo "Waiting for SSH..."
+            sleep 5
+          done
+          echo "SSH did not become available" && exit 1
+
       - name: Test SSH port connectivity
         run: nc -vz ${{ env.PUBLIC_IP }} 22
 
