@@ -8,7 +8,7 @@ resource "aws_key_pair" "ci_key" {
 }
 
 resource "aws_security_group" "allow_ssh" {
-  name        = "ci-allow-ssh-${timestamp()}"
+  name = "ci-allow-ssh-${timestamp()}"
 
   ingress {
     from_port   = 22
@@ -26,11 +26,11 @@ resource "aws_security_group" "allow_ssh" {
 }
 
 resource "aws_instance" "ci_instance" {
-  ami                    = var.ami_id
-  instance_type          = "t2.micro"
-  key_name               = aws_key_pair.ci_key.key_name
-  vpc_security_group_ids = [aws_security_group.allow_ssh.id]
-
+  ami                         = var.ami_id
+  instance_type               = "t2.micro"
+  key_name                    = aws_key_pair.ci_key.key_name
+  vpc_security_group_ids      = [aws_security_group.allow_ssh.id]
+  associate_public_ip_address = true
   tags = {
     Name = "ci-test-instance"
   }

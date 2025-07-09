@@ -47,6 +47,9 @@ jobs:
           echo "${{ secrets.CI_PRIVATE_KEY }}" > ci_key
           chmod 600 ci_key
 
+      - name: Test SSH port connectivity
+        run: nc -vz ${{ env.PUBLIC_IP }} 22
+
       - name: Deploy App to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i ci_key ubuntu@${{ env.PUBLIC_IP }} 'bash -s' < ./scripts/deploy.sh
