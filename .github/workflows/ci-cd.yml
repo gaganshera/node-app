@@ -56,9 +56,6 @@ jobs:
           done
           echo "SSH did not become available" && exit 1
 
-      - name: Test SSH port connectivity
-        run: nc -vz ${{ env.PUBLIC_IP }} 22
-
       - name: Deploy App to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i ci_key ubuntu@${{ env.PUBLIC_IP }} 'bash -s' < ./scripts/deploy.sh
@@ -67,7 +64,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i ci_key ubuntu@${{ env.PUBLIC_IP }} 'bash -s' < ./scripts/run_tests.sh
 
-      # - name: Terraform Destroy (cleanup)
-      #   if: always()
-      #   working-directory: ./terraform
-      #   run: terraform destroy -auto-approve
+      - name: Terraform Destroy (cleanup)
+        if: always()
+        working-directory: ./terraform
+        run: terraform destroy -auto-approve
