@@ -3,7 +3,7 @@ name: CI/CD Pipeline with EC2 Deploy & Test
 on:
   push:
     branches:
-      - master
+      - terraform-demo
   pull_request:
 
 jobs:
