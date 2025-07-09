@@ -49,11 +49,11 @@ jobs:
 
       - name: Deploy App to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i ci_key ec2-user@${{ env.PUBLIC_IP }} 'bash -s' < ./scripts/deploy.sh
+          ssh -o StrictHostKeyChecking=no -i ci_key ubuntu@${{ env.PUBLIC_IP }} 'bash -s' < ./scripts/deploy.sh
 
       - name: Run Tests on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i ci_key ec2-user@${{ env.PUBLIC_IP }} 'bash -s' < ./scripts/run_tests.sh
+          ssh -o StrictHostKeyChecking=no -i ci_key ubuntu@${{ env.PUBLIC_IP }} 'bash -s' < ./scripts/run_tests.sh
 
       - name: Terraform Destroy (cleanup)
         if: always()
