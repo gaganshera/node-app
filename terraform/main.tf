@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_key_pair" "ci_key" {
-  key_name   = "ci-temp-key"
+  key_name   = "ci-temp-key-${timestamp()}"
   public_key = file(var.public_key_path)
 }
 
