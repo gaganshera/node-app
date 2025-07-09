@@ -64,7 +64,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i ci_key ubuntu@${{ env.PUBLIC_IP }} 'bash -s' < ./scripts/run_tests.sh
 
-      - name: Terraform Destroy (cleanup)
-        if: always()
-        working-directory: ./terraform
-        run: terraform destroy -auto-approve
+      # - name: Terraform Destroy (cleanup)
+      #   if: always()
+      #   working-directory: ./terraform
+      #   run: terraform destroy -auto-approve
