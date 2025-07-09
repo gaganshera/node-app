@@ -8,7 +8,7 @@ resource "aws_key_pair" "ci_key" {
 }
 
 resource "aws_security_group" "allow_ssh" {
-  name        = "ci-allow-ssh"
+  name        = "ci-allow-ssh-${timestamp()}"
 
   ingress {
     from_port   = 22
