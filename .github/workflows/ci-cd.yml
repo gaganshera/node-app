@@ -1,0 +1,60 @@
+name: CI/CD Pipeline with EC2 Deploy & Test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  deploy-test:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ap-south-1
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init & Apply
+        working-directory: ./terraform
+        run: |
+          terraform init
+          terraform apply -auto-approve
+
+      - name: Get Public IP
+        id: get_ip
+        working-directory: ./terraform
+        run: |
+          echo "PUBLIC_IP=$(terraform output -raw public_ip)" >> $GITHUB_ENV
+
+      - name: Add SSH Key
+        run: |
+          echo "${{ secrets.CI_PRIVATE_KEY }}" > ci_key
+          chmod 600 ci_key
+
+      - name: Deploy App to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ci_key ec2-user@${{ env.PUBLIC_IP }} 'bash -s' < ./scripts/deploy.sh
+
+      - name: Run Tests on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ci_key ec2-user@${{ env.PUBLIC_IP }} 'bash -s' < ./scripts/run_tests.sh
+
+      - name: Terraform Destroy (cleanup)
+        if: always()
+        working-directory: ./terraform
+        run: terraform destroy -auto-approve
